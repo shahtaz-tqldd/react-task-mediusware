@@ -3,21 +3,56 @@ import React, { useState } from "react";
 const Problem1 = () => {
   const [show, setShow] = useState("all");
 
+  // 1. A STATE TO STORE THE TASKS WITH STATUS
+  const [tasks, setTasks] = useState([]);
+
   const handleClick = (val) => {
     setShow(val);
   };
+
+  // 2. THEN LET US GRAB THE INPUT
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const taskName = e.target.taskName.value;
+    const taskStatus = e.target.taskStatus.value;
+
+    // 3. UPDATE THE STORE OF THE TASK AND EMPTY THE INPUT BOX
+    setTasks([...tasks, { taskName, status: taskStatus.toLowerCase() }]);
+    e.target.reset();
+  };
+
+  // 4. FILTER THE TASK BASED ON STATUS
+  const filteredTasks = tasks.filter((task) => {
+    if (show === "all") return true;
+    return task.status === show;
+  });
+
+  // 5. FINALLY SORT THEM
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    const order = { active: 1, completed: 2 };
+    return order[a.status] - order[b.status];
+  });
 
   return (
     <div className="container">
       <div className="row justify-content-center mt-5">
         <h4 className="text-center text-uppercase mb-5">Problem-1</h4>
         <div className="col-6 ">
-          <form className="row gy-2 gx-3 align-items-center mb-4">
+          <form
+            onSubmit={handleSubmit}
+            className="row gy-2 gx-3 align-items-center mb-4"
+          >
             <div className="col-auto">
-              <input type="text" className="form-control" placeholder="Name" />
+              <input
+                id="taskName"
+                type="text"
+                className="form-control"
+                placeholder="Name"
+              />
             </div>
             <div className="col-auto">
               <input
+                id="taskStatus"
                 type="text"
                 className="form-control"
                 placeholder="Status"
@@ -68,7 +103,16 @@ const Problem1 = () => {
                 <th scope="col">Status</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              {sortedTasks.map(({ taskName, status }, index) => (
+                <tr key={index}>
+                  <td>
+                    {index + 1}. {taskName}
+                  </td>
+                  <td>{status.charAt(0).toUpperCase() + status.slice(1)}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
